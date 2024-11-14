@@ -30,7 +30,7 @@ func TestAggregation(t *testing.T) {
 		{name: "exp_histograms_are_aggregated"},
 		{name: "gauges_are_aggregated"},
 		{name: "summaries_are_aggregated"},
-		{name: "all_delta_metrics_are_passed_through"},  // Deltas are passed through even when aggregation is enabled
+		{name: "all_cumulative_metrics_are_passed_through"},  // Cumulatives are passed through even when aggregation is enabled
 		{name: "non_monotonic_sums_are_passed_through"}, // Non-monotonic sums are passed through even when aggregation is enabled
 		{name: "gauges_are_passed_through", passThrough: true},
 		{name: "summaries_are_passed_through", passThrough: true},

@@ -8,7 +8,7 @@ resourceMetrics:
     scopeMetrics:
       - schemaUrl: https://test-scope-schema.com/schema
         scope:
-          name: MyTestInstrument
+          name: MyTestInstrument_all_cumulative_metrics_are_passed_through
           version: "1.2.3"
           attributes:
             - key: foo
@@ -17,7 +17,7 @@ resourceMetrics:
         metrics:
           - name: delta.monotonic.sum
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               isMonotonic: true
               dataPoints:
                 - timeUnixNano: 50
@@ -28,7 +28,7 @@ resourceMetrics:
                         stringValue: bbb
           - name: delta.histogram.test
             histogram:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
                 - timeUnixNano: 80
                   explicitBounds: [0.01, 0.1, 1, 10, 100]
@@ -39,7 +39,7 @@ resourceMetrics:
                         stringValue: bbb
           - name: delta.exphistogram.test
             histogram:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
                 - timeUnixNano: 80
                   scale: 4

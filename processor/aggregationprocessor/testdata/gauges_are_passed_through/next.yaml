@@ -8,7 +8,7 @@ resourceMetrics:
     scopeMetrics:
       - schemaUrl: https://test-scope-schema.com/schema
         scope:
-          name: MyTestInstrument
+          name: MyTestInstrument_gauges_are_passed_through
           version: "1.2.3"
           attributes:
             - key: foo
@@ -17,7 +17,7 @@ resourceMetrics:
         metrics:
           - name: test.gauge
             gauge:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - timeUnixNano: 50
                   asDouble: 345
@@ -36,4 +36,4 @@ resourceMetrics:
                   attributes:
                     - key: aaa
                       value:
-                        stringValue: bbb                      
+                        stringValue: bbb

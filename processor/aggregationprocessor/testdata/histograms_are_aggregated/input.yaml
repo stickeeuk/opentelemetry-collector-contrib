@@ -8,7 +8,7 @@ resourceMetrics:
     scopeMetrics:
       - schemaUrl: https://test-scope-schema.com/schema
         scope:
-          name: MyTestInstrument
+          name: MyTestInstrument_histograms_are_aggregated
           version: "1.2.3"
           attributes:
             - key: foo
@@ -17,28 +17,31 @@ resourceMetrics:
         metrics:
           - name: cumulative.histogram.test
             histogram:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - timeUnixNano: 50
                   explicitBounds: [0.01, 0.1, 1, 10, 100]
                   bucketCounts: [4, 7, 9, 6, 25]
+                  sum: 10270.99
+                  count: 51
                   attributes:
                     - key: aaa
                       value:
                         stringValue: bbb
-                # This data point is out of order
-                # The aggregator should ignore it since the first data point has a newer timestamp
                 - timeUnixNano: 20
                   explicitBounds: [0.01, 0.1, 1, 10, 100]
                   bucketCounts: [2, 3, 7, 4, 20]
+                  sum: 2350.12
+                  count: 36
                   attributes:
                     - key: aaa
                       value:
                         stringValue: bbb
-                # This one is the newest, so it should be the one stored
                 - timeUnixNano: 80
                   explicitBounds: [0.01, 0.1, 1, 10, 100]
                   bucketCounts: [9, 12, 17, 8, 34]
+                  sum: 3621.23
+                  count: 80
                   attributes:
                     - key: aaa
                       value:

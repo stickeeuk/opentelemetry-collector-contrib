@@ -8,7 +8,7 @@ resourceMetrics:
     scopeMetrics:
       - schemaUrl: https://test-scope-schema.com/schema
         scope:
-          name: MyTestInstrument
+          name: MyTestInstrument_summaries_are_passed_through
           version: "1.2.3"
           attributes:
             - key: foo

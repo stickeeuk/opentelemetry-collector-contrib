@@ -8,7 +8,7 @@ resourceMetrics:
     scopeMetrics:
       - schemaUrl: https://test-scope-schema.com/schema
         scope:
-          name: MyTestInstrument
+          name: MyTestInstrument_histograms_are_aggregated
           version: "1.2.3"
           attributes:
             - key: foo
@@ -17,11 +17,13 @@ resourceMetrics:
         metrics:
           - name: cumulative.histogram.test
             histogram:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
-                - timeUnixNano: 80
+                - timeUnixNano: 50
                   explicitBounds: [0.01, 0.1, 1, 10, 100]
-                  bucketCounts: [9, 12, 17, 8, 34]
+                  bucketCounts: [15, 22, 33, 18, 79]
+                  sum: 16242.340000
+                  count: 167
                   attributes:
                     - key: aaa
                       value:

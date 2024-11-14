@@ -8,7 +8,7 @@ resourceMetrics:
     scopeMetrics:
       - schemaUrl: https://test-scope-schema.com/schema
         scope:
-          name: MyTestInstrument
+          name: MyTestInstrument_exp_histograms_are_aggregated
           version: "1.2.3"
           attributes:
             - key: foo
@@ -17,7 +17,7 @@ resourceMetrics:
         metrics:
           - name: cumulative.exphistogram.test
             exponentialHistogram:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - timeUnixNano: 50
                   scale: 4
@@ -32,14 +32,12 @@ resourceMetrics:
                     - key: aaa
                       value:
                         stringValue: bbb
-                # This data point is out of order
-                # The aggregator should ignore it since the first data point has a newer timestamp
                 - timeUnixNano: 20
                   scale: 4
                   zeroCount: 2
                   positive:
-                    Offset: 2
-                    BucketCounts: [2, 3, 7, 4, 20]
+                    offset: 2
+                    bucketCounts: [2, 3, 7, 4, 20]
                   negative:
                     offset: 7
                     bucketCounts: [8, 3, 9, 1]
@@ -47,7 +45,6 @@ resourceMetrics:
                     - key: aaa
                       value:
                         stringValue: bbb
-                # This one is the newest, so it should be the one stored
                 - timeUnixNano: 80
                   scale: 4
                   zeroCount: 5
