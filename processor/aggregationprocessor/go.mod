@@ -1,4 +1,4 @@
-module github.com/open-telemetry/opentelemetry-collector-contrib/processor/intervalprocessor
+module github.com/open-telemetry/opentelemetry-collector-contrib/processor/aggregationprocessor
 
 go 1.22.0
 

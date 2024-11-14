@@ -1,4 +1,4 @@
-type: interval
+type: aggregation
 
 status:
   class: processor

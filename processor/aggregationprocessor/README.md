@@ -6,7 +6,7 @@
 | Stability     | [development]: metrics   |
 | Distributions | [] |
 | Warnings      | [Statefulness](#warnings) |
-| Issues        | [![Open issues](https://img.shields.io/github/issues-search/open-telemetry/opentelemetry-collector-contrib?query=is%3Aissue%20is%3Aopen%20label%3Aprocessor%2Finterval%20&label=open&color=orange&logo=opentelemetry)](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues?q=is%3Aopen+is%3Aissue+label%3Aprocessor%2Finterval) [![Closed issues](https://img.shields.io/github/issues-search/open-telemetry/opentelemetry-collector-contrib?query=is%3Aissue%20is%3Aclosed%20label%3Aprocessor%2Finterval%20&label=closed&color=blue&logo=opentelemetry)](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues?q=is%3Aclosed+is%3Aissue+label%3Aprocessor%2Finterval) |
+| Issues        | [![Open issues](https://img.shields.io/github/issues-search/open-telemetry/opentelemetry-collector-contrib?query=is%3Aissue%20is%3Aopen%20label%3Aprocessor%aggregation%20&label=open&color=orange&logo=opentelemetry)](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues?q=is%3Aopen+is%3Aissue+label%3Aprocessor%aggregation) [![Closed issues](https://img.shields.io/github/issues-search/open-telemetry/opentelemetry-collector-contrib?query=is%3Aissue%20is%3Aclosed%20label%3Aprocessor%aggregation%20&label=closed&color=blue&logo=opentelemetry)](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues?q=is%3Aclosed+is%3Aissue+label%3Aprocessor%aggregation) |
 | [Code Owners](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/CONTRIBUTING.md#becoming-a-code-owner)    | [@RichieSams](https://www.github.com/RichieSams), [@sh0rez](https://www.github.com/sh0rez), [@djaglowski](https://www.github.com/djaglowski) |
 
 [development]: https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/component-stability.md#development
@@ -14,12 +14,12 @@
 
 ## Description
 
-The interval processor (`intervalprocessor`) aggregates metrics and periodically forwards the latest values to the next component in the pipeline. The processor supports aggregating the following metric types:
+The aggregation processor (`aggregationprocessor`) aggregates metrics and periodically forwards the latest values to the next component in the pipeline. The processor supports aggregating the following metric types:
 
 * Monotonically increasing, cumulative sums
 * Monotonically increasing, cumulative histograms
 * Monotonically increasing, cumulative exponential histograms
-* Gauges 
+* Gauges
 * Summaries
 
 The following metric types will *not* be aggregated, and will instead be passed, unchanged, to the next component in the pipeline:
@@ -34,10 +34,10 @@ The following metric types will *not* be aggregated, and will instead be passed,
 The following settings can be optionally configured:
 
 ```yaml
-intervalprocessor:
-  # The interval in which the processor should export the aggregated metrics. 
+aggregationprocessor:
+  # The interval in which the processor should export the aggregated metrics.
   [ interval: <duration> | default = 60s ]
-  
+
   pass_through:
     # Whether gauges should be aggregated or passed through to the next component as they are
     [ gauge: <bool> | default = false ]

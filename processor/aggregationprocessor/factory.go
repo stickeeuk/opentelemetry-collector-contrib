@@ -1,7 +1,7 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-package intervalprocessor // import "github.com/open-telemetry/opentelemetry-collector-contrib/processor/intervalprocessor"
+package aggregationprocessor // import "github.com/open-telemetry/opentelemetry-collector-contrib/processor/aggregationprocessor"
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/processor"
 
-	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/intervalprocessor/internal/metadata"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/aggregationprocessor/internal/metadata"
 )
 
 // NewFactory returns a new factory for the Metrics Generation processor.
