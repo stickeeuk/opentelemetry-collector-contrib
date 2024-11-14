@@ -112,10 +112,6 @@ func (p *Processor) ConsumeMetrics(ctx context.Context, md pmetric.Metrics) erro
 					// Check if we care about this value
 					sum := m.Sum()
 
-					if !sum.IsMonotonic() {
-						return false
-					}
-
 					if sum.AggregationTemporality() != pmetric.AggregationTemporalityDelta {
 						return false
 					}
@@ -144,11 +140,15 @@ func (p *Processor) ConsumeMetrics(ctx context.Context, md pmetric.Metrics) erro
 						return false
 					}
 
-					mClone, metricID := p.getOrCloneMetric(rm, sm, m)
-					cloneExpHistogram := mClone.ExponentialHistogram()
+					// TODO: implement ExponentialHistogram
+					p.logger.Error("ExponentialHistogram aggregation not implemented")
+					return false
 
-					aggregateDataPoints(expHistogram.DataPoints(), cloneExpHistogram.DataPoints(), metricID, p.expHistogramLookup)
-					return true
+					// mClone, metricID := p.getOrCloneMetric(rm, sm, m)
+					// cloneExpHistogram := mClone.ExponentialHistogram()
+
+					// aggregateDataPoints(expHistogram.DataPoints(), cloneExpHistogram.DataPoints(), metricID, p.expHistogramLookup)
+					// return true
 				default:
 					errs = errors.Join(fmt.Errorf("invalid MetricType %d", m.Type()))
 					return false

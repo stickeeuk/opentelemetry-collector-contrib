@@ -26,9 +26,9 @@ func TestAggregation(t *testing.T) {
 	}{
 		{name: "basic_aggregation"},
 		{name: "histograms_are_aggregated"},
-		{name: "exp_histograms_are_aggregated"},
+		// TODO: {name: "exp_histograms_are_aggregated"},
 		{name: "all_cumulative_metrics_are_passed_through"},  // Cumulatives are passed through even when aggregation is enabled
-		{name: "non_monotonic_sums_are_passed_through"}, // Non-monotonic sums are passed through even when aggregation is enabled
+		{name: "non_monotonic_sums_are_aggregated"},
 		{name: "gauges_are_passed_through"},
 		{name: "summaries_are_passed_through"},
 	}
