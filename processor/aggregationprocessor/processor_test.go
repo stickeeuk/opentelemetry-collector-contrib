@@ -23,17 +23,14 @@ func TestAggregation(t *testing.T) {
 
 	testCases := []struct {
 		name        string
-		passThrough bool
 	}{
 		{name: "basic_aggregation"},
 		{name: "histograms_are_aggregated"},
 		{name: "exp_histograms_are_aggregated"},
-		{name: "gauges_are_aggregated"},
-		{name: "summaries_are_aggregated"},
 		{name: "all_cumulative_metrics_are_passed_through"},  // Cumulatives are passed through even when aggregation is enabled
 		{name: "non_monotonic_sums_are_passed_through"}, // Non-monotonic sums are passed through even when aggregation is enabled
-		{name: "gauges_are_passed_through", passThrough: true},
-		{name: "summaries_are_passed_through", passThrough: true},
+		{name: "gauges_are_passed_through"},
+		{name: "summaries_are_passed_through"},
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -41,7 +38,7 @@ func TestAggregation(t *testing.T) {
 
 	var config *Config
 	for _, tc := range testCases {
-		config = &Config{Interval: time.Second, PassThrough: PassThrough{Gauge: tc.passThrough, Summary: tc.passThrough}}
+		config = &Config{Interval: time.Second}
 
 		t.Run(tc.name, func(t *testing.T) {
 			// next stores the results of the filter metric processor
