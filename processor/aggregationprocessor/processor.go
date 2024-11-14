@@ -128,7 +128,7 @@ func (p *Processor) ConsumeMetrics(ctx context.Context, md pmetric.Metrics) erro
 						return false
 					}
 
-					if sum.AggregationTemporality() != pmetric.AggregationTemporalityCumulative {
+					if sum.AggregationTemporality() != pmetric.AggregationTemporalityDelta {
 						return false
 					}
 
@@ -140,7 +140,7 @@ func (p *Processor) ConsumeMetrics(ctx context.Context, md pmetric.Metrics) erro
 				case pmetric.MetricTypeHistogram:
 					histogram := m.Histogram()
 
-					if histogram.AggregationTemporality() != pmetric.AggregationTemporalityCumulative {
+					if histogram.AggregationTemporality() != pmetric.AggregationTemporalityDelta {
 						return false
 					}
 
@@ -152,7 +152,7 @@ func (p *Processor) ConsumeMetrics(ctx context.Context, md pmetric.Metrics) erro
 				case pmetric.MetricTypeExponentialHistogram:
 					expHistogram := m.ExponentialHistogram()
 
-					if expHistogram.AggregationTemporality() != pmetric.AggregationTemporalityCumulative {
+					if expHistogram.AggregationTemporality() != pmetric.AggregationTemporalityDelta {
 						return false
 					}
 
@@ -191,13 +191,38 @@ func aggregateDataPoints[DPS metrics.DataPointSlice[DP], DP metrics.DataPoint[DP
 			continue
 		}
 
-		// Check if the datapoint is newer
-		if dp.Timestamp() > existingDP.Timestamp() {
-			dp.CopyTo(existingDP)
-			continue
+		// Add the value of dp to existingDP
+		switch dp := any(dp).(type) {
+		case pmetric.NumberDataPoint:
+			existingDP := any(existingDP).(pmetric.NumberDataPoint)
+			switch dp.ValueType() {
+			case pmetric.NumberDataPointValueTypeInt:
+				existingDP.SetIntValue(existingDP.IntValue() + dp.IntValue())
+			case pmetric.NumberDataPointValueTypeDouble:
+				existingDP.SetDoubleValue(existingDP.DoubleValue() + dp.DoubleValue())
+			}
+		case pmetric.HistogramDataPoint:
+			existingDP := any(existingDP).(pmetric.HistogramDataPoint)
+			existingDP.SetCount(existingDP.Count() + dp.Count())
+			existingDP.SetSum(existingDP.Sum() + dp.Sum())
+			for j := 0; j < dp.BucketCounts().Len(); j++ {
+				existingDP.BucketCounts().SetAt(j, existingDP.BucketCounts().At(j)+dp.BucketCounts().At(j))
+			}
+		case pmetric.ExponentialHistogramDataPoint:
+			existingDP := any(existingDP).(pmetric.ExponentialHistogramDataPoint)
+			existingDP.SetCount(existingDP.Count() + dp.Count())
+			existingDP.SetSum(existingDP.Sum() + dp.Sum())
+			for j := 0; j < dp.Positive().BucketCounts().Len(); j++ {
+				existingDP.Positive().BucketCounts().SetAt(j, existingDP.Positive().BucketCounts().At(j)+dp.Positive().BucketCounts().At(j))
+			}
+			for j := 0; j < dp.Negative().BucketCounts().Len(); j++ {
+				existingDP.Negative().BucketCounts().SetAt(j, existingDP.Negative().BucketCounts().At(j)+dp.Negative().BucketCounts().At(j))
+			}
+		case pmetric.SummaryDataPoint:
+			existingDP := any(existingDP).(pmetric.SummaryDataPoint)
+			existingDP.SetCount(existingDP.Count() + dp.Count())
+			existingDP.SetSum(existingDP.Sum() + dp.Sum())
 		}
-
-		// Otherwise, we leave existing as-is
 	}
 }
 
