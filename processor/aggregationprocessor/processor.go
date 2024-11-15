@@ -12,6 +12,7 @@ import (
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/processor"
 	"go.uber.org/zap"
@@ -77,6 +78,7 @@ func (p *Processor) Start(_ context.Context, _ component.Host) error {
 				exportTicker.Stop()
 				return
 			case <-exportTicker.C:
+				p.logger.Debug(fmt.Sprintf("Exporting aggregated metrics"))
 				p.exportMetrics()
 			}
 		}
@@ -119,7 +121,21 @@ func (p *Processor) ConsumeMetrics(ctx context.Context, md pmetric.Metrics) erro
 					mClone, metricID := p.getOrCloneMetric(rm, sm, m)
 					cloneSum := mClone.Sum()
 
-					aggregateDataPoints(sum.DataPoints(), cloneSum.DataPoints(), metricID, p.numberLookup)
+					// streamID := identity.OfStream(metricID, sum.DataPoints().At(0))
+					mCloneDataPoints := cloneSum.DataPoints()
+
+					// dpClone := mCloneDataPoints.AppendEmpty()
+					// sum.DataPoints().At(0).CopyTo(dpClone)
+					// dpClone.Attributes().RemoveIf(func(k string, _ pcommon.Value) bool {
+					// 	p.logger.Debug(fmt.Sprintf("Saw attribute %s", k))
+					// 	return k != "service.instance.id" && k != "service.namespace" && k != "service.name"
+					// })
+
+					// streamID := identity.OfStream(metricID, dpClone)
+
+					p.logger.Debug(fmt.Sprintf("Aggregating data points for Sum %s with streamID", m.Name(), identity.OfStream(metricID, sum.DataPoints().At(0))))
+					aggregateDataPoints(sum.DataPoints(), mCloneDataPoints, metricID, p.numberLookup)
+					// aggregateDataPoints(sum.DataPoints(), cloneSum.DataPoints(), metricID, p.numberLookup)
 					return true
 				case pmetric.MetricTypeHistogram:
 					histogram := m.Histogram()
@@ -131,6 +147,7 @@ func (p *Processor) ConsumeMetrics(ctx context.Context, md pmetric.Metrics) erro
 					mClone, metricID := p.getOrCloneMetric(rm, sm, m)
 					cloneHistogram := mClone.Histogram()
 
+					p.logger.Debug(fmt.Sprintf("Aggregating data points for Histogram %s with streamID", m.Name(), identity.OfStream(metricID, histogram.DataPoints().At(0))))
 					aggregateDataPoints(histogram.DataPoints(), cloneHistogram.DataPoints(), metricID, p.histogramLookup)
 					return true
 				case pmetric.MetricTypeExponentialHistogram:
@@ -170,7 +187,15 @@ func aggregateDataPoints[DPS metrics.DataPointSlice[DP], DP metrics.DataPoint[DP
 	for i := 0; i < dataPoints.Len(); i++ {
 		dp := dataPoints.At(i)
 
+		// // Clone dp and remove all attributes except for service.instance.id, service.namespace, and service.name
+		// dpClone := mCloneDataPoints.AppendEmpty()
+		// dp.CopyTo(dpClone)
+		// dpClone.Attributes().RemoveIf(func(k string, _ pcommon.Value) bool {
+		// 	return k != "service.instance.id" && k != "service.namespace" && k != "service.name"
+		// })
+
 		streamID := identity.OfStream(metricID, dp)
+		// streamID := identity.OfStream(metricID, dpClone)
 		existingDP, ok := dpLookup[streamID]
 		if !ok {
 			dpClone := mCloneDataPoints.AppendEmpty()
@@ -243,6 +268,22 @@ func (p *Processor) exportMetrics() {
 
 func (p *Processor) getOrCloneMetric(rm pmetric.ResourceMetrics, sm pmetric.ScopeMetrics, m pmetric.Metric) (pmetric.Metric, identity.Metric) {
 	// Find the ResourceMetrics
+
+	// Clone rm and remove all attributes except for service.instance.id, service.namespace, and service.name
+	// rmClone := p.md.ResourceMetrics().AppendEmpty()
+	// rm.Resource().CopyTo(rmClone.Resource())
+	// rmClone.SetSchemaUrl(rm.SchemaUrl())
+	// rmClone.Resource().Attributes().RemoveIf(func(k string, _ pcommon.Value) bool {
+	// 	p.logger.Debug(fmt.Sprintf("Saw Resource attribute %s", k))
+	// 	return k != "service.instance.id" && k != "service.namespace" && k != "service.name"
+	// })
+
+	rm.Resource().Attributes().RemoveIf(func(k string, _ pcommon.Value) bool {
+		p.logger.Debug(fmt.Sprintf("Saw Resource attribute %s", k))
+		return k != "service.instance.id" && k != "service.namespace" && k != "service.name"
+	})
+
+	// resID := identity.OfResource(rmClone.Resource())
 	resID := identity.OfResource(rm.Resource())
 	rmClone, ok := p.rmLookup[resID]
 	if !ok {
@@ -254,6 +295,12 @@ func (p *Processor) getOrCloneMetric(rm pmetric.ResourceMetrics, sm pmetric.Scop
 	}
 
 	// Find the ScopeMetrics
+
+	sm.Scope().Attributes().RemoveIf(func(k string, _ pcommon.Value) bool {
+		p.logger.Debug(fmt.Sprintf("Saw Scope attribute %s", k))
+		return k != "service.instance.id" && k != "service.namespace" && k != "service.name"
+	})
+
 	scopeID := identity.OfScope(resID, sm.Scope())
 	smClone, ok := p.smLookup[scopeID]
 	if !ok {
