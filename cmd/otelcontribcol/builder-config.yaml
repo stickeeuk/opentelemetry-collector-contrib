@@ -100,6 +100,7 @@ exporters:
 processors:
   - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.113.0
   - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.113.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/aggregationprocessor v0.113.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.113.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/cumulativetodeltaprocessor v0.113.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/deltatocumulativeprocessor v0.113.0
@@ -381,6 +382,7 @@ replaces:
   - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/cloudfoundryreceiver => ../../receiver/cloudfoundryreceiver
   - github.com/open-telemetry/opentelemetry-collector-contrib/internal/filter => ../../internal/filter
   - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/activedirectorydsreceiver => ../../receiver/activedirectorydsreceiver
+  - github.com/open-telemetry/opentelemetry-collector-contrib/processor/aggregationprocessor => ../../processor/aggregationprocessor
   - github.com/open-telemetry/opentelemetry-collector-contrib/processor/routingprocessor => ../../processor/routingprocessor
   - github.com/open-telemetry/opentelemetry-collector-contrib/processor/deltatorateprocessor => ../../processor/deltatorateprocessor
   - github.com/open-telemetry/opentelemetry-collector-contrib/processor/deltatocumulativeprocessor => ../../processor/deltatocumulativeprocessor
